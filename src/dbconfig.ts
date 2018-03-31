@@ -1,6 +1,7 @@
 export const OracleConfig = {
-    user: 'HR',
-    password: 'ORACLE',
-    connectString: 'localhost:1521/xe'
-  };
+  user: process.env.oracleUser || 'HR',
+  password: process.env.oraclePass || 'ORACLE',
+  connectString: process.env.connectString || 'localhost:1521/xe'
+};
+
   
