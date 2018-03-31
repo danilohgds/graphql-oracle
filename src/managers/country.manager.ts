@@ -1,5 +1,7 @@
-const countryQuery = `select * from HR.countries where country_id = 'US'`;
 import * as oracleI from 'oracledb';
+
+const countryQuery = 'select * from HR.countries where country_id = :id ';
+const allCountriesQuery = 'select * from HR.countries';
 
 interface CountryList {
     countryId: number;
@@ -7,7 +9,7 @@ interface CountryList {
     regionId: number;
 }
 
-export interface countryRow {
+interface countryRow {
     COUNTRY_ID:string;
     COUNTRY_NAME: string;
     REGION_ID: string;
@@ -18,27 +20,47 @@ export class CountryManager {
         
     }
 
-    getCountries(){
+    getAllCountries(){
         return this.oracledb.getConnection(this.config).then((connection:any) => {
-            connection.clientIdentifier = 'getCountries';
-            return connection.execute(countryQuery).then((result: any) =>{
-                    console.log(result.rows[0]);
-                    let cList:CountryList = {
-                            countryId: result.rows[0][0],
-                            countryName:  result.rows[0][1],
-                            regionId:  result.rows[0][2]
-                    }
+            connection.clientIdentifier = 'getAllCountries';
+            return connection.execute(allCountriesQuery).then((result: any) =>{                    
+                    let cList:CountryList[] = Array<CountryList>();                    
+                    result.rows.forEach((dbRow:any) => {
+                        cList.push({
+                            countryId : dbRow[0],countryName : dbRow[1],regionId:dbRow[2]                            
+                        })
+                    });
                     doRelease(connection);
-                    return [cList];
+                    return cList;
                 }
             );
         });
     }
 
-    getCountriesPooled(){
+    getAllCountriesPooled(){
         return this.oraclePool.getConnection().then((connection:any) => {
-            connection.clientIdentifier = 'getCountriesPooled';
-            return connection.execute(countryQuery).then((result: any) =>{
+            connection.clientIdentifier = 'getAllCountriesPooled';
+            return connection.execute(allCountriesQuery).then((result: any) =>{
+                    let cList:CountryList[] = Array<CountryList>();                    
+                    result.rows.forEach((dbRow:any) => {
+                        cList.push({
+                            countryId : dbRow[0],countryName : dbRow[1],regionId:dbRow[2]                            
+                        })
+                    });
+                    doRelease(connection);
+                    return cList;
+                }
+            );
+        });
+    }
+
+    getCountries(countryName:string){
+        return this.oracledb.getConnection(this.config).then((connection:any) => {
+            connection.clientIdentifier = 'getCountries';
+            const params = {
+                id: { type: oracleI.STRING, dir: oracleI.BIND_IN, val: countryName }
+            };
+            return connection.execute(countryQuery, params).then((result: any) =>{
                     console.log(result.rows[0]);
                     let cList:CountryList = {
                             countryId: result.rows[0][0],
@@ -46,7 +68,27 @@ export class CountryManager {
                             regionId:  result.rows[0][2]
                     }
                     doRelease(connection);
-                    return [cList];
+                    return cList;
+                }
+            );
+        });
+    }
+
+    getCountriesPooled(countryName:string){
+        return this.oraclePool.getConnection().then((connection:any) => {
+            connection.clientIdentifier = 'getCountriesPooled';
+            const params = {
+                id: { type: oracleI.STRING, dir: oracleI.BIND_IN, val: countryName }
+            };
+            return connection.execute(countryQuery,params).then((result: any) =>{
+                    console.log(result.rows[0]);
+                    let cList:CountryList = {
+                            countryId: result.rows[0][0],
+                            countryName:  result.rows[0][1],
+                            regionId:  result.rows[0][2]
+                    }
+                    doRelease(connection);
+                    return cList;
                 }
             );
         });

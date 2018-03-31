@@ -26,9 +26,20 @@ export const countryType = new GraphQLObjectType({
 });
 
 export const countriesQuery: GraphQLFieldConfig<null, any> = {
-    description: 'Countries Query in HR Schema',
+    description: 'A Country Query in HR Schema',
+    type: countryType,
+    args: {
+        countryName: { type: GraphQLString }        
+    },
+    resolve: (obj: any, args: any, context: any) => {    
+        return Promise.resolve(context.managers.countryManager.getCountriesPooled(args.countryName));
+    }
+};
+
+export const allCountriesQuery: GraphQLFieldConfig<null, any> = {
+    description: 'All Countries Query in HR Schema',
     type: new GraphQLList(countryType),
     resolve: (obj: any, args: {}, context: any) => {    
-        return Promise.resolve(context.managers.countryManager.getCountriesPooled());
+        return Promise.resolve(context.managers.countryManager.getAllCountriesPooled());
     }
 };

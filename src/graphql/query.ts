@@ -1,6 +1,6 @@
 import { GraphQLObjectType, GraphQLObjectTypeConfig } from 'graphql';
 import { helloQuery } from './types/hello.query';
-import { countriesQuery } from './types/countries.query';
+import { countriesQuery, allCountriesQuery } from './types/countries.query';
 import { OracleContext } from './context/oracleContext';
 
 const queryConfig: GraphQLObjectTypeConfig<null, OracleContext> = {
@@ -8,7 +8,8 @@ const queryConfig: GraphQLObjectTypeConfig<null, OracleContext> = {
     description: 'Root Query',
     fields: () => ({
         hello: helloQuery,
-        countries: countriesQuery
+        allCountries: allCountriesQuery,
+        country: countriesQuery,
     })
 };
 
