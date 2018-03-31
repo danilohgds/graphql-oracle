@@ -29,6 +29,6 @@ export const countriesQuery: GraphQLFieldConfig<null, any> = {
     description: 'Countries Query in HR Schema',
     type: new GraphQLList(countryType),
     resolve: (obj: any, args: {}, context: any) => {    
-        return Promise.resolve(context.managers.countryManager.getCountriesPooled(context.oracleConfig));
+        return Promise.resolve(context.managers.countryManager.getCountriesPooled());
     }
 };
