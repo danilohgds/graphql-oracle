@@ -6,7 +6,7 @@ import { query } from './query';
 
 export const appGraphQLSchema: GraphQLSchema = new GraphQLSchema({
     query,
-    //mutation,
+    mutation,
     //subscription,
     types
 });

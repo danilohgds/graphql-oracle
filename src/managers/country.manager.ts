@@ -2,6 +2,7 @@ import * as oracleI from 'oracledb';
 
 const countryQuery = 'select * from HR.countries where country_id = :id ';
 const allCountriesQuery = 'select * from HR.countries';
+const insertCountry = 'insert into HR.countries values(:id,:name)'
 
 interface CountryList {
     countryId: number;
@@ -79,6 +80,27 @@ export class CountryManager {
             connection.clientIdentifier = 'getCountriesPooled';
             const params = {
                 id: { type: oracleI.STRING, dir: oracleI.BIND_IN, val: countryName }
+            };
+            return connection.execute(countryQuery,params).then((result: any) =>{
+                    console.log(result.rows[0]);
+                    let cList:CountryList = {
+                            countryId: result.rows[0][0],
+                            countryName:  result.rows[0][1],
+                            regionId:  result.rows[0][2]
+                    }
+                    doRelease(connection);
+                    return cList;
+                }
+            );
+        });
+    }
+
+    addCountry(countryId: string, countryName: string){
+        return this.oraclePool.getConnection().then((connection:any) => {
+            connection.clientIdentifier = 'addCountry';
+            const params = {
+                id: { type: oracleI.STRING, dir: oracleI.BIND_IN, val: countryId },
+                name: { type: oracleI.STRING, dir: oracleI.BIND_IN, val: countryName }
             };
             return connection.execute(countryQuery,params).then((result: any) =>{
                     console.log(result.rows[0]);
